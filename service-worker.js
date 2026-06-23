@@ -1,28 +1,43 @@
-const CACHE="geoguia-v1";
+const CACHE_NAME = "GeoGuia-v2";
 
 
-const archivos=[
+const ARCHIVOS = [
 
-"/GeoGuia/",
+"./",
 
-"/GeoGuia/index.html",
+"./index.html",
+"./style.css",
+"./app.js",
+"./manifest.json",
 
-"/GeoGuia/style.css",
 
-"/GeoGuia/app.js"
+"./geositios/domuyo.html",
+
+
+"./img/domuyo.jpg",
+"./img/los-bolillos.jpg"
 
 ];
 
 
 
 
-self.addEventListener("install", e=>{
+// instalar
+
+self.addEventListener("install", evento => {
 
 
-e.waitUntil(
+evento.waitUntil(
 
-caches.open(CACHE)
-.then(cache=>cache.addAll(archivos))
+caches.open(CACHE_NAME)
+
+.then(cache => {
+
+console.log("Guardando GeoGuia offline");
+
+return cache.addAll(ARCHIVOS);
+
+})
 
 );
 
@@ -32,14 +47,64 @@ caches.open(CACHE)
 
 
 
-self.addEventListener("fetch", e=>{
+
+// cargar desde memoria
+
+self.addEventListener("fetch", evento => {
 
 
-e.respondWith(
+evento.respondWith(
 
-caches.match(e.request)
 
-.then(resp=>resp || fetch(e.request))
+caches.match(evento.request)
+
+.then(respuesta => {
+
+
+return respuesta || fetch(evento.request);
+
+
+})
+
+
+);
+
+
+});
+
+
+
+
+
+// limpiar versiones viejas
+
+self.addEventListener("activate", evento => {
+
+
+evento.waitUntil(
+
+caches.keys().then(keys => {
+
+
+return Promise.all(
+
+keys.map(key => {
+
+
+if(key !== CACHE_NAME){
+
+return caches.delete(key);
+
+}
+
+
+})
+
+);
+
+
+})
+
 
 );
 
