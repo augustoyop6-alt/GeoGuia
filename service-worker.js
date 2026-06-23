@@ -1,39 +1,22 @@
-const CACHE_NAME = "GeoGuia-v2";
+const CACHE_NAME = "GeoGuia-v3";
 
 
 const ARCHIVOS = [
-
 "./",
-
 "./index.html",
 "./style.css",
 "./app.js",
-"./manifest.json",
-
-
-"./geositios/domuyo.html",
-
-
-"./img/domuyo.jpg",
-"./img/los-bolillos.jpg"
-
+"./manifest.json"
 ];
 
 
 
+self.addEventListener("install", event => {
 
-// instalar
-
-self.addEventListener("install", evento => {
-
-
-evento.waitUntil(
+event.waitUntil(
 
 caches.open(CACHE_NAME)
-
 .then(cache => {
-
-console.log("Guardando GeoGuia offline");
 
 return cache.addAll(ARCHIVOS);
 
@@ -48,63 +31,17 @@ return cache.addAll(ARCHIVOS);
 
 
 
-// cargar desde memoria
-
-self.addEventListener("fetch", evento => {
+self.addEventListener("fetch", event => {
 
 
-evento.respondWith(
+event.respondWith(
 
+caches.match(event.request)
+.then(response => {
 
-caches.match(evento.request)
-
-.then(respuesta => {
-
-
-return respuesta || fetch(evento.request);
-
+return response || fetch(event.request);
 
 })
-
-
-);
-
-
-});
-
-
-
-
-
-// limpiar versiones viejas
-
-self.addEventListener("activate", evento => {
-
-
-evento.waitUntil(
-
-caches.keys().then(keys => {
-
-
-return Promise.all(
-
-keys.map(key => {
-
-
-if(key !== CACHE_NAME){
-
-return caches.delete(key);
-
-}
-
-
-})
-
-);
-
-
-})
-
 
 );
 
